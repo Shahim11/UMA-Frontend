@@ -9,6 +9,7 @@ function AdminPanel() {
     const [selectedIds, setSelectedIds] = useState([]);
     const navigate = useNavigate();
 
+    // Fetch all users when the component loads
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -24,11 +25,13 @@ function AdminPanel() {
         })
         .catch(error => {
             if (error.response && error.response.status === 401) {
+                localStorage.removeItem('token');
                 navigate('/');  // Redirect to login page if unauthorized
             }
         });
     }, [navigate]);
 
+    // Handle selecting users
     const handleSelect = (id) => {
         setSelectedIds((prev) => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
     };
@@ -56,6 +59,7 @@ function AdminPanel() {
     //     }
     // };
 
+    // Block selected users
     const handleBlock = async () => {
         const token = localStorage.getItem('token');
         try {
@@ -69,20 +73,28 @@ function AdminPanel() {
                 localStorage.removeItem('token'); // Remove the token
                 navigate('/'); // Redirect to the home page
             } else {
-                window.location.reload(); // Refresh the page
+                // window.location.reload(); // Refresh the page
+                fetchUsers();  // Refresh the user list after blocking
             }
         } catch (error) {
             alert('Error blocking users. Please try again.');
         }
     };
     
+    // Unblock selected users
     const handleUnblock = async () => {
         const token = localStorage.getItem('token');
-        await api.post('/api/users/unblock', { ids: selectedIds }, {
-            headers: { Authorization: token }
-        });
-        alert('Users unblocked');
-        window.location.reload();
+        try {
+            const response = await api.post('/api/users/unblock', { ids: selectedIds }, {
+                headers: { Authorization: token }
+            });
+            
+            // alert('Users unblocked');
+            alert(response.data.message);
+            fetchUsers();  // Refresh the user list after unblocking
+        } catch (error) {
+            alert('Error unblocking users. Please try again.');
+        } 
     };
 
     // const handleDelete = async () => {
@@ -94,23 +106,43 @@ function AdminPanel() {
     //     window.location.reload();
     // };
 
+    // Delete selected users
     const handleDelete = async () => {
         const token = localStorage.getItem('token');
         try {
             const response = await api.post('/api/users/delete', { ids: selectedIds }, {
                 headers: { Authorization: token }
             });
+
             alert(response.data.message); // Show the server message
     
             if (response.data.currentUserDeleted) {
                 localStorage.removeItem('token'); // Remove the token
                 navigate('/'); // Redirect to the home page
             } else {
-                window.location.reload(); // Refresh the page
+                fetchUsers();  // Refresh the user list after deleting
+                // window.location.reload(); // Refresh the page
             }
         } catch (error) {
             alert('Error deleting users. Please try again.');
         }
+    };
+
+    // Fetch the user list from the backend (Refactor to reuse after actions)
+    const fetchUsers = () => {
+        const token = localStorage.getItem('token');
+        api.get('/api/users/users', {
+            headers: { Authorization: token }
+        })
+        .then(response => {
+            setUsers(response.data);
+        })
+        .catch(error => {
+            if (error.response && error.response.status === 401) {
+                localStorage.removeItem('token');
+                navigate('/');
+            }
+        });
     };
     
 
