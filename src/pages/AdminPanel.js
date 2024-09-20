@@ -1,4 +1,3 @@
-// src/pages/AdminPanel.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';  // Import the api instance
@@ -36,29 +35,6 @@ function AdminPanel() {
         setSelectedIds((prev) => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
     };
 
-    // const handleBlock = async () => {
-    //     const token = localStorage.getItem('token');
-    //     try {
-    //         const response = await api.post('/users/block', { ids: selectedIds }, {
-    //             headers: { Authorization: token }
-    //         });
-    
-    //         if (response.data.currentUserBlocked) {
-    //             alert('You have been blocked and will be logged out.');
-    //             // Clear token and user information, log the user out
-    //             localStorage.removeItem('token');
-    //             localStorage.removeItem('username');
-    //             navigate('/');  // Redirect to login page
-    //         } else {
-    //             alert('Users blocked');
-    //             window.location.reload();  // Refresh the page
-    //         }
-    //     } catch (error) {
-    //         console.error('Error blocking users', error);
-    //         alert('Error blocking users');
-    //     }
-    // };
-
     // Block selected users
     const handleBlock = async () => {
         const token = localStorage.getItem('token');
@@ -75,6 +51,7 @@ function AdminPanel() {
             } else {
                 // window.location.reload(); // Refresh the page
                 fetchUsers();  // Refresh the user list after blocking
+                setSelectedIds([]);  // Clear selected checkboxes
             }
         } catch (error) {
             alert('Error blocking users. Please try again.');
@@ -92,19 +69,11 @@ function AdminPanel() {
             // alert('Users unblocked');
             alert(response.data.message);
             fetchUsers();  // Refresh the user list after unblocking
+            setSelectedIds([]);  // Clear selected checkboxes
         } catch (error) {
             alert('Error unblocking users. Please try again.');
         } 
     };
-
-    // const handleDelete = async () => {
-    //     const token = localStorage.getItem('token');
-    //     await api.post('/users/delete', { ids: selectedIds }, {
-    //         headers: { Authorization: token }
-    //     });
-    //     alert('Users deleted');
-    //     window.location.reload();
-    // };
 
     // Delete selected users
     const handleDelete = async () => {
@@ -147,7 +116,7 @@ function AdminPanel() {
     
 
     return (
-        <div className='px-5 mx-5'>
+        <div className='px-4 mx-4'>
             <div className="d-flex justify-content-between mb-3">
                 {/* Toolbar */}
                 <div className="btn-toolbar" role="toolbar">
@@ -169,38 +138,40 @@ function AdminPanel() {
                 </div>
             </div>
 
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th>
-                            <input type="checkbox" onChange={(e) => {
-                                if (e.target.checked) {
-                                    setSelectedIds(users.map(user => user.id));  // Select all
-                                } else {
-                                    setSelectedIds([]);  // Unselect all
-                                }
-                            }} />
-                        </th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Last Login</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {users.map(user => (
-                        <tr key={user.id}>
-                            <td>
-                                <input type="checkbox" checked={selectedIds.includes(user.id)} onChange={() => handleSelect(user.id)} />
-                            </td>
-                            <td>{user.name}</td>
-                            <td>{user.email}</td>
-                            <td>{new Date(user.last_login_time).toLocaleString()}</td>
-                            <td>{user.status}</td>
+            <div className="table-responsive rounded-2">
+                <table className="table table-hover table-light table-striped">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>
+                                <input type="checkbox" onChange={(e) => {
+                                    if (e.target.checked) {
+                                        setSelectedIds(users.map(user => user.id));  // Select all
+                                    } else {
+                                        setSelectedIds([]);  // Unselect all
+                                    }
+                                }} />
+                            </th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Last Login Time</th>
+                            <th>Status</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody className="table-group-divider">
+                        {users.map(user => (
+                            <tr key={user.id}>
+                                <td>
+                                    <input type="checkbox" checked={selectedIds.includes(user.id)} onChange={() => handleSelect(user.id)} />
+                                </td>
+                                <td>{user.name}</td>
+                                <td>{user.email}</td>
+                                <td>{new Date(user.last_login_time).toLocaleString()}</td>
+                                <td>{user.status}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>    
         </div>
     );
 }
