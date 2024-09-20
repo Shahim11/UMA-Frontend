@@ -16,7 +16,7 @@ function AdminPanel() {
             return;
         }
         
-        api.get('/users/users', {
+        api.get('/api/users/users', {
             headers: { Authorization: token }
         })
         .then(response => {
@@ -59,7 +59,7 @@ function AdminPanel() {
     const handleBlock = async () => {
         const token = localStorage.getItem('token');
         try {
-            const response = await api.post('/users/block', { ids: selectedIds }, {
+            const response = await api.post('/api/users/block', { ids: selectedIds }, {
                 headers: { Authorization: token }
             });
     
@@ -78,7 +78,7 @@ function AdminPanel() {
     
     const handleUnblock = async () => {
         const token = localStorage.getItem('token');
-        await api.post('/users/unblock', { ids: selectedIds }, {
+        await api.post('/api/users/unblock', { ids: selectedIds }, {
             headers: { Authorization: token }
         });
         alert('Users unblocked');
@@ -97,7 +97,7 @@ function AdminPanel() {
     const handleDelete = async () => {
         const token = localStorage.getItem('token');
         try {
-            const response = await api.post('/users/delete', { ids: selectedIds }, {
+            const response = await api.post('/api/users/delete', { ids: selectedIds }, {
                 headers: { Authorization: token }
             });
             alert(response.data.message); // Show the server message

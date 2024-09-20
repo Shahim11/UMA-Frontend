@@ -10,7 +10,7 @@ function LoginForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await api.post('/auth/login', { email, password });  // Use the api instance
+            const response = await api.post('/api/auth/login', { email, password });  // Use the api instance
             localStorage.setItem('token', response.data.token);  // Save token in localStorage
             localStorage.setItem('username', response.data.username);  // Save username in localStorage
             navigate('/admin');  // Redirect to admin page after successful login

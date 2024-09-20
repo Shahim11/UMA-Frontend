@@ -11,7 +11,7 @@ function RegistrationForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/auth/register', { name, email, password });  // Use the api instance
+            await api.post('/api/auth/register', { name, email, password });  // Use the api instance
             alert('Registration successful! Please log in.');
             navigate('/');  // Redirect to login page after successful registration
         } catch (error) {

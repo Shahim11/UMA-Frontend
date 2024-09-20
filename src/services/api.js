@@ -6,9 +6,9 @@ const api = axios.create({
 });
 
 // You can append '/api' globally like this, so you don’t need to put it in every request
-api.interceptors.request.use(config => {
-    config.url = `/api${config.url}`;
-    return config;
-});
+// api.interceptors.request.use(config => {
+//     config.url = `/api${config.url}`;
+//     return config;
+// });
 
 export default api;
